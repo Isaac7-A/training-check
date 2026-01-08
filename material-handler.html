@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Material Handler Training</title>
+
+<style>
+body { font-size: 18px; padding: 20px; }
+select, button { width: 100%; padding: 12px; margin-top: 10px; }
+#status { margin-top: 15px; color: red; }
+</style>
+</head>
+
+<body>
+<h2>Material Handler Training Check</h2>
+
+<select id="nameSelect" onchange="clearStatus()">
+  <option value="">Select your name</option>
+</select>
+
+<button onclick="check()">Continue</button>
+<div id="status"></div>
+
+<script>
+let data = [];
+
+fetch('training.json')
+  .then(r => r.json())
+  .then(d => {
+    data = d;
+    const ddl = document.getElementById('nameSelect');
+    d.forEach(r => {
+      const o = document.createElement('option');
+      o.value = r.FullName;
+      o.textContent = r.FullName;
+      ddl.appendChild(o);
+    });
+  });
+
+function clearStatus() {
+  document.getElementById('status').textContent = '';
+}
+
+function check() {
+  const name = document.getElementById('nameSelect').value;
+  const status = document.getElementById('status');
+  const row = data.find(r => r.FullName === name);
+
+  if (!row || !row.MaterialHandler) {
+    status.textContent = 'Training not required';
+    return;
+  }
+
+  const expiry = new Date(row.MaterialHandler);
+  const today = new Date();
+
+  if (expiry < today) {
+    status.textContent = `Training expired (${row.MaterialHandler})`;
+  } else {
+    window.location.href = 'https://www.canva.com/YOUR_CANVA_LINK';
+  }
+}
+</script>
+</body>
+</html>
